@@ -47,3 +47,5 @@ Future enhancement when 1st version:
   - load data function
   - let price list more easy to input (such as create something to auto fill empty cell with user input data)
   - save half way data to prevent hand ithchy close situation.
+  - Simplify the loop function
+  - Find out more magic in csvhelper
