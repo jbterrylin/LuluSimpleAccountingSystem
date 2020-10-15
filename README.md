@@ -1,11 +1,7 @@
 # LuluSimpleAccountingSystem
 
-thing to do:
-    save should be delete and save
-    let processor become singleton
-
 This is simple accounting system (Can call it accounting? im not sure also hahaha).
-Do in 1 day.
+Main function done in 1 day. But keep 加花 hahahah
 Easy to input. Out data and processed data in csv.
 
 What it do:
@@ -46,11 +42,19 @@ Interesting place:
     - A call B to use A function to get A data and save it to B
   - csvhelper
     - c# framework, easy to create csv string to save
+  - save and load on half way
 
-Future enhancement when 1st version:
-  - when press save btn on price list page will save （alr have） and auto close it (havent)
-  - load data function
-  - let price list more easy to input (such as create something to auto fill empty cell with user input data)
-  - save half way data to prevent hand ithchy close situation.
-  - Simplify the loop function
-  - Find out more magic in csvhelper
+Future Enhancement for 1st version:
+  - [x] when press save btn on price list page will save （alr have） and auto close it (havent)
+  - [x] load data function
+  - [x] let price list more easy to input (such as create something to auto fill empty cell with user input data)
+  - [x] save half way data to prevent hand ithchy close situation.
+  - [] Simplify the loop function
+  - [x] Find out more magic in csvhelper
+
+Future Enhancement for 2st version:
+  - [] save should be delete and save
+  - [] let processor become singleton
+  - [] find out the way to write generic list
+  - [] find out more thing to 加花
+  - [] add comment to hardcore function
