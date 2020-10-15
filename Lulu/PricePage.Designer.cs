@@ -39,6 +39,8 @@
             // 
             // PricegridTB
             // 
+            this.PricegridTB.AllowUserToAddRows = false;
+            this.PricegridTB.AllowUserToDeleteRows = false;
             this.PricegridTB.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.PricegridTB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PricegridTB.Location = new System.Drawing.Point(3, 3);

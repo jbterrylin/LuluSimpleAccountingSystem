@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FILETYPE.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,13 +66,15 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Pack.cs" />
+    <Compile Include="packMapForRead.cs" />
+    <Compile Include="priceMapForRead.cs" />
     <Compile Include="PricePage.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="PricePage.Designer.cs">
       <DependentUpon>PricePage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Prices.cs" />
+    <Compile Include="Price.cs" />
     <Compile Include="Processor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

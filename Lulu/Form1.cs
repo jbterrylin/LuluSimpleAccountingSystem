@@ -18,7 +18,7 @@ namespace Lulu
         public List<Pack> packlist = new List<Pack>();
         public Processor processor = null;
         public static PricePage pricepage = null;
-        public static List<Prices> pricelist = null;
+        public static List<Price> pricelist = new List<Price>();
 
         public Form1()
         {
@@ -33,6 +33,7 @@ namespace Lulu
             {
                 this.ActiveControl = targetTB;
                 //e.Handled = true;
+                // cancel beep sound
                 e.SuppressKeyPress = true;
             }
         }
@@ -52,16 +53,51 @@ namespace Lulu
             changeFocusThroughKeyboard(e, QuanityTB, Keys.Enter);
         }
 
+        // if fill all corectly, return true, else
+        // ask component, person want to be null and quantity want to be 0, if yes return true
+        // no return false
+        private bool soulfulThreeAsk()
+        {
+            if (ComponentTB.Text == null || ComponentTB.Text == "")
+            {
+                if (MessageBox.Show("Do you want the Component Name to be null?", "Alert",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    return false;
+                }
+            }
+            if (PersonTB.Text == null || PersonTB.Text == "")
+            {
+                if (MessageBox.Show("Do you want the Person Name to be null?", "Alert",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    return false;
+                }
+            }
+            if (QuanityTB.Value == 0)
+            {
+                if (MessageBox.Show("Do you want the quantity is 0?", "Alert",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private void QuanityTB_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
                 changeFocusThroughKeyboard(e, QuanityTB, Keys.Enter);
-                packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value });
-                QuanityTB.Value = 0;
-                updatePackListView();
-                updatePackTreeView();
-                return;
+                if (soulfulThreeAsk())
+                {
+                    packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value });
+                    QuanityTB.Value = 0;
+                    updatePackListView();
+                    updatePackTreeView();
+                    return;
+                }
             }
             if (e.KeyCode == Keys.Q)
             {
@@ -81,37 +117,16 @@ namespace Lulu
 
         private void SubmitBtn_Click(object sender, EventArgs e)
         {
-            if (ComponentTB.Text == null || ComponentTB.Text == "")
+            if (soulfulThreeAsk())
             {
-                if (MessageBox.Show("Do you want the Component Name to be null?", "Alert",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                {
-                    return;
-                }
+                packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value });
+                this.ActiveControl = DateTB;
+                ComponentTB.Text = "Part ";
+                PersonTB.Text = null;
+                QuanityTB.Value = 0;
+                updatePackListView();
+                updatePackTreeView();
             }
-            else if (PersonTB.Text == null || PersonTB.Text == "")
-            {
-                if (MessageBox.Show("Do you want the Person Name to be null?", "Alert",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                {
-                    return;
-                }
-            }
-            else if (QuanityTB.Value == 0)
-            {
-                if (MessageBox.Show("Do you want the quantity is 0?", "Alert",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                {
-                    return;
-                }
-            }
-            packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value });
-            this.ActiveControl = DateTB;
-            ComponentTB.Text = "Part ";
-            PersonTB.Text = null;
-            QuanityTB.Value = 0;
-            updatePackListView();
-            updatePackTreeView();
         }
 
         private void updatePackListView()
@@ -162,33 +177,7 @@ namespace Lulu
             }
         }
 
-        private void SaveBtn_Click(object sender, EventArgs e)
-        {
-            if (!Directory.Exists(SaveLocationTB.Text))
-            {
-                MessageBox.Show("The link you write is not exist.");
-                return;
-            } else if (SaveLocationTB.Text.EndsWith("\\"))
-            {
-                MessageBox.Show("No need to put \\ on last word.");
-                return;
-            } else if (pricelist == null)
-            {
-                MessageBox.Show("Please input price by click price button");
-                return;
-            } else if (MessageBox.Show("Do you save and save to this link?", "Alert",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-            {
-                return;
-                //} else if (Directory.Exists(SaveLocationTB.Text+ "\\PackData"))
-                //{
-                //    MessageBox.Show("PackData folder alr exist. Please delete or rename it.");
-                //    return;
-            }
-            //Directory.CreateDirectory(SaveLocationTB.Text + "\\PackData");
-            processor = new Processor(packlist, pricelist, SaveLocationTB.Text + "\\PackData");
-        }
-
+        // if ListView's row clicked, ask want to delete or not, yes then delete
         private void PackListView_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
@@ -220,14 +209,89 @@ namespace Lulu
 
         private void PriceBtn_Click(object sender, EventArgs e)
         {
-            pricepage = new PricePage(packlist.Select(x => x.person).Distinct().ToList(), packlist.Select(x => x.component).Distinct().ToList());
+            pricepage = new PricePage(packlist.Select(x => x.person).Distinct().ToList(), packlist.Select(x => x.component).Distinct().ToList(), pricelist);
             pricepage.Show();
         }
 
+        // delegate thing
         public static void callGetPriceList()
         {
-            pricelist = pricepage.getPriceList().pricelist;
-            MessageBox.Show("Price list have been save.");
+            pricelist = pricepage.getPriceList();
+        }
+
+        private void ProcessBtn_Click(object sender, EventArgs e)
+        {
+            if (!Directory.Exists(SaveLocationTB.Text))
+            {
+                MessageBox.Show("The link you write is not exist.");
+                return;
+            }
+            else if (SaveLocationTB.Text.EndsWith("\\"))
+            {
+                MessageBox.Show("No need to put \\ on last word.");
+                return;
+            }
+            else if (pricelist == null)
+            {
+                MessageBox.Show("Please input price by click price button");
+                return;
+            }
+            else if (MessageBox.Show("Do you save and save to this link?", "Alert",
+                  MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            {
+                return;
+                //} else if (Directory.Exists(SaveLocationTB.Text+ "\\PackData"))
+                //{
+                //    MessageBox.Show("PackData folder alr exist. Please delete or rename it.");
+                //    return;
+            }
+            //Directory.CreateDirectory(SaveLocationTB.Text + "\\PackData");
+            processor = new Processor(packlist, pricelist, SaveLocationTB.Text + "\\PackData");
+            processor.process();
+        }
+
+        private void SaveBtn_Click(object sender, EventArgs e)
+        {
+            processor = new Processor(packlist, pricelist, SaveLocationTB.Text + "\\PackData");
+            processor.save();
+        }
+
+        private void LoadBtn_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.InitialDirectory = "c:\\";
+            openFileDialog.Filter = "CSV Files (*.csv)|*.csv";
+            openFileDialog.FilterIndex = 0;
+            openFileDialog.RestoreDirectory = true;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string selectedFileName = openFileDialog.FileName;
+                processor = new Processor(packlist, pricelist, SaveLocationTB.Text + "\\PackData");
+                var okformat = processor.checkLoadFormat(selectedFileName);
+                if(okformat == FILETYPE.PACK)
+                {
+                    if (MessageBox.Show("Do you overwritecurrent value?", "Alert",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        packlist = processor.loadPackList(selectedFileName);
+                    }
+                    else
+                    {
+                        packlist = packlist.Concat(processor.loadPackList(selectedFileName)).ToList();
+                    }
+                } else if (okformat == FILETYPE.PRICE)
+                {
+                    pricelist = processor.loadPriceList(selectedFileName);
+                } else
+                {
+                    MessageBox.Show("Data is wrong.");
+                }
+                
+            }
+            updatePackListView();
+            updatePackTreeView();
         }
     }
 }

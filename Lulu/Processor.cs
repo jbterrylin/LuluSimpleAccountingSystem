@@ -7,32 +7,190 @@ using System.IO;
 using CsvHelper;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace Lulu
 {
     public class Processor
     {
         List<Pack> packlist = null;
-        List<Prices> pricelist = null;
+        List<Price> pricelist = null;
         string savelink = null;
 
-        public Processor(List<Pack> packlist, List<Prices> pricelist, string savelink)
+        public Processor(List<Pack> packlist, List<Price> pricelist, string savelink)
         {
             this.packlist = packlist;
-            this.savelink = savelink;
             this.pricelist = pricelist;
+            this.savelink = savelink;
+        }
 
+        public void process()
+        {
             var datelist = packlist.Select(x => x.date).Distinct();
             foreach (var date in datelist)
             {
                 processPackDayBased(date);
             }
-            Debug.WriteLine("Processor created");
-            Debug.WriteLine(pricelist.Count);
             processPackComponentBased();
             processPackPeopleBased();
             processPackPaidBased();
-            MessageBox.Show("Done Save.");
+            MessageBox.Show("process success");
+        }
+
+        public void save()
+        {
+            if(packlist.Count > 0 || 
+                MessageBox.Show("Packlist is empty, do you still want to save?", "Alert",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                savePack();
+            }
+            if (pricelist.Count > 0 ||
+                MessageBox.Show("Pricelist is empty, do you still want to save?", "Alert",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                savePrice();
+            }
+            MessageBox.Show("save success");
+        }
+
+        public FILETYPE checkLoadFormat(string selectedFileName)
+        {
+            Debug.WriteLine(selectedFileName);
+            using (var reader = new StreamReader(selectedFileName))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                csv.Read();
+                if (csv.GetField<string>(0) == "date" &&
+                    csv.GetField<string>(1) == "component" &&
+                    csv.GetField<string>(2) == "person" &&
+                    csv.GetField<string>(3) == "quantity")
+                {
+                    return FILETYPE.PACK;
+                }
+                else if (csv.GetField<string>(0) == "component" &&
+                    csv.GetField<string>(1) == "person" &&
+                    csv.GetField<string>(2) == "price")
+                {
+                    return FILETYPE.PRICE;
+                }
+                return FILETYPE.FALSE;
+            }
+        }
+
+        public List<Pack> loadPackList(string selectedFileName)
+        {
+            using (var reader = new StreamReader(selectedFileName))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                csv.Configuration.Delimiter = ",";
+                csv.Read();
+                csv.ReadHeader();
+                csv.Configuration.RegisterClassMap<packMapForRead>();
+                var records = csv.GetRecords<Pack>();
+                return records.ToList();
+            }
+        }
+
+        public List<Price> loadPriceList(string selectedFileName)
+        {
+            using (var reader = new StreamReader(selectedFileName))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                csv.Read();
+                csv.ReadHeader();
+                csv.Configuration.RegisterClassMap<priceMapForRead>();
+                var records = csv.GetRecords<Price>().ToList();
+                return records;
+            }
+        }
+
+        //public List<Price> load(string selectedFileName, FILETYPE filetype, bool overwrite)
+        //{
+        //    using (var reader = new StreamReader(selectedFileName))
+        //    using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        //    {
+        //        csv.Read();
+        //        if (filetype == FILETYPE.PRICE)
+        //        {
+        //            csv.Configuration.RegisterClassMap<priceMapForRead>();
+        //            var records = csv.GetRecords<Price>().ToList();
+        //            return records;
+        //        }
+        //        else if (filetype == FILETYPE.PACK)
+        //        {
+        //            csv.Configuration.RegisterClassMap<packMapForRead>();
+        //            var records = csv.GetRecords<Pack>();
+        //            return records;
+        //        }
+        //    }
+        //    return null;
+        //}
+
+        private void savePack()
+        {
+            using (var mem = new MemoryStream())
+            using (var writer = new StreamWriter(mem))
+            using (var csvWriter = new CsvWriter(writer, System.Globalization.CultureInfo.CurrentCulture))
+            {
+                csvWriter.Configuration.Delimiter = ",";
+
+                csvWriter.WriteField("date");
+                csvWriter.WriteField("component");
+                csvWriter.WriteField("person");
+                csvWriter.WriteField("quantity");
+                csvWriter.NextRecord();
+
+                foreach (var pack in packlist)
+                {
+                    csvWriter.WriteField(pack.date);
+                    csvWriter.WriteField(pack.component);
+                    csvWriter.WriteField(pack.person);
+                    csvWriter.WriteField(pack.quantity);
+                    csvWriter.NextRecord();
+                }
+
+                writer.Flush();
+                var result = Encoding.UTF8.GetString(mem.ToArray());
+                //Console.WriteLine(result);
+                // Write the string to a file.
+                StreamWriter file = new StreamWriter(savelink + "\\" + "savepack.csv");
+                file.WriteLine(result);
+                file.Close();
+                mem.Flush();
+            }
+        }
+
+        private void savePrice()
+        {
+            using (var mem = new MemoryStream())
+            using (var writer = new StreamWriter(mem))
+            using (var csvWriter = new CsvWriter(writer, System.Globalization.CultureInfo.CurrentCulture))
+            {
+                csvWriter.Configuration.Delimiter = ",";
+
+                csvWriter.WriteField("component");
+                csvWriter.WriteField("person");
+                csvWriter.WriteField("price");
+                csvWriter.NextRecord();
+
+                foreach (var price in pricelist)
+                {
+                    csvWriter.WriteField(price.component);
+                    csvWriter.WriteField(price.person);
+                    csvWriter.WriteField(price.price);
+                    csvWriter.NextRecord();
+                }
+
+                writer.Flush();
+                var result = Encoding.UTF8.GetString(mem.ToArray());
+                //Console.WriteLine(result);
+                // Write the string to a file.
+                StreamWriter file = new StreamWriter(savelink + "\\" + "saveprice.csv");
+                file.WriteLine(result);
+                file.Close();
+                mem.Flush();
+            }
         }
 
         private void processPackDayBased(DateTime date)

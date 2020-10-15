@@ -1,4 +1,9 @@
 # LuluSimpleAccountingSystem
+
+thing to do:
+    save should be delete and save
+    let processor become singleton
+
 This is simple accounting system (Can call it accounting? im not sure also hahaha).
 Do in 1 day.
 Easy to input. Out data and processed data in csv.

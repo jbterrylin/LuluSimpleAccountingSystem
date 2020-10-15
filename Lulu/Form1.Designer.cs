@@ -43,13 +43,13 @@
             this.DateTB = new System.Windows.Forms.DateTimePicker();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.SaveBtn = new System.Windows.Forms.Button();
+            this.ProcessBtn = new System.Windows.Forms.Button();
             this.LoadBtn = new System.Windows.Forms.Button();
+            this.SaveBtn = new System.Windows.Forms.Button();
             this.SaveLocationTB = new System.Windows.Forms.TextBox();
             this.PackTreeView = new System.Windows.Forms.TreeView();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.PriceBtn = new System.Windows.Forms.Button();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -223,38 +223,53 @@
             // 
             // tableLayoutPanel5
             // 
-            this.tableLayoutPanel5.ColumnCount = 2;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel5.Controls.Add(this.SaveBtn, 0, 0);
-            this.tableLayoutPanel5.Controls.Add(this.LoadBtn, 1, 0);
+            this.tableLayoutPanel5.ColumnCount = 3;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel5.Controls.Add(this.ProcessBtn, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.LoadBtn, 2, 0);
+            this.tableLayoutPanel5.Controls.Add(this.SaveBtn, 1, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 47);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 1;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel5.Size = new System.Drawing.Size(228, 38);
             this.tableLayoutPanel5.TabIndex = 4;
+            // 
+            // ProcessBtn
+            // 
+            this.ProcessBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ProcessBtn.Location = new System.Drawing.Point(3, 3);
+            this.ProcessBtn.Name = "ProcessBtn";
+            this.ProcessBtn.Size = new System.Drawing.Size(70, 32);
+            this.ProcessBtn.TabIndex = 0;
+            this.ProcessBtn.Text = "Process";
+            this.ProcessBtn.UseVisualStyleBackColor = true;
+            this.ProcessBtn.Click += new System.EventHandler(this.ProcessBtn_Click);
+            // 
+            // LoadBtn
+            // 
+            this.LoadBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LoadBtn.Location = new System.Drawing.Point(155, 3);
+            this.LoadBtn.Name = "LoadBtn";
+            this.LoadBtn.Size = new System.Drawing.Size(70, 32);
+            this.LoadBtn.TabIndex = 1;
+            this.LoadBtn.Text = "Load";
+            this.LoadBtn.UseVisualStyleBackColor = true;
+            this.LoadBtn.Click += new System.EventHandler(this.LoadBtn_Click);
             // 
             // SaveBtn
             // 
             this.SaveBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SaveBtn.Location = new System.Drawing.Point(3, 3);
+            this.SaveBtn.Location = new System.Drawing.Point(79, 3);
             this.SaveBtn.Name = "SaveBtn";
-            this.SaveBtn.Size = new System.Drawing.Size(108, 32);
-            this.SaveBtn.TabIndex = 0;
-            this.SaveBtn.Text = "save+process";
+            this.SaveBtn.Size = new System.Drawing.Size(70, 32);
+            this.SaveBtn.TabIndex = 2;
+            this.SaveBtn.Text = "Save";
             this.SaveBtn.UseVisualStyleBackColor = true;
             this.SaveBtn.Click += new System.EventHandler(this.SaveBtn_Click);
-            // 
-            // LoadBtn
-            // 
-            this.LoadBtn.Location = new System.Drawing.Point(117, 3);
-            this.LoadBtn.Name = "LoadBtn";
-            this.LoadBtn.Size = new System.Drawing.Size(41, 23);
-            this.LoadBtn.TabIndex = 1;
-            this.LoadBtn.Text = "load";
-            this.LoadBtn.UseVisualStyleBackColor = true;
             // 
             // SaveLocationTB
             // 
@@ -275,12 +290,10 @@
             // 
             // tableLayoutPanel6
             // 
-            this.tableLayoutPanel6.ColumnCount = 3;
+            this.tableLayoutPanel6.ColumnCount = 2;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
             this.tableLayoutPanel6.Controls.Add(this.PriceBtn, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.radioButton1, 2, 0);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 91);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
@@ -294,22 +307,11 @@
             this.PriceBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PriceBtn.Location = new System.Drawing.Point(3, 3);
             this.PriceBtn.Name = "PriceBtn";
-            this.PriceBtn.Size = new System.Drawing.Size(108, 32);
+            this.PriceBtn.Size = new System.Drawing.Size(120, 32);
             this.PriceBtn.TabIndex = 9;
             this.PriceBtn.Text = "Price";
             this.PriceBtn.UseVisualStyleBackColor = true;
             this.PriceBtn.Click += new System.EventHandler(this.PriceBtn_Click);
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.radioButton1.Location = new System.Drawing.Point(208, 3);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(17, 32);
-            this.radioButton1.TabIndex = 0;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -328,7 +330,6 @@
             this.tableLayoutPanel4.PerformLayout();
             this.tableLayoutPanel5.ResumeLayout(false);
             this.tableLayoutPanel6.ResumeLayout(false);
-            this.tableLayoutPanel6.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -350,13 +351,13 @@
         private System.Windows.Forms.DateTimePicker DateTB;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
-        private System.Windows.Forms.Button SaveBtn;
+        private System.Windows.Forms.Button ProcessBtn;
         private System.Windows.Forms.Button LoadBtn;
         private System.Windows.Forms.TextBox SaveLocationTB;
         private System.Windows.Forms.TreeView PackTreeView;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
-        private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.Button PriceBtn;
+        private System.Windows.Forms.Button SaveBtn;
     }
 }
 
