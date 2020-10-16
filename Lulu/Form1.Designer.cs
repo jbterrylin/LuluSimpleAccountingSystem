@@ -278,7 +278,7 @@
             this.SaveLocationTB.Name = "SaveLocationTB";
             this.SaveLocationTB.Size = new System.Drawing.Size(228, 22);
             this.SaveLocationTB.TabIndex = 5;
-            this.SaveLocationTB.Text = "C:";
+            this.SaveLocationTB.Text = ".";
             // 
             // PackTreeView
             // 

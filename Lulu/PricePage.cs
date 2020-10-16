@@ -16,7 +16,6 @@ namespace Lulu
 
         List<string> personlist = null;
         List<string> componentlist = null;
-        List<Price> pricelist = new List<Price>();
 
         public PricePage(List<string> personlist, List<string> componentlist, List<Price> pricelist)
         {
@@ -24,7 +23,6 @@ namespace Lulu
 
             this.personlist = personlist;
             this.componentlist = componentlist;
-            this.pricelist = pricelist;
 
             // header
             PricegridTB.Columns.Add("Component", "Component");

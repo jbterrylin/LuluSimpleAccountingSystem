@@ -17,15 +17,38 @@ namespace Lulu
         List<Price> pricelist = null;
         string savelink = null;
 
-        public Processor(List<Pack> packlist, List<Price> pricelist, string savelink)
+        // singleton shit
+        private static Processor _instance;
+        private Processor() { }
+        public static Processor GetInstance()
         {
-            this.packlist = packlist;
-            this.pricelist = pricelist;
-            this.savelink = savelink;
+            if (_instance == null)
+            {
+                _instance = new Processor();
+            }
+            return _instance;
+        }
+
+        public void setValue(List<Pack> packlist, List<Price> pricelist, string savelink)
+        {
+            if(packlist != null)
+            {
+                this.packlist = packlist;
+            }
+            if (pricelist != null)
+            {
+                this.pricelist = pricelist;
+            }
+            if (savelink != null)
+            {
+                this.savelink = savelink;
+            }
         }
 
         public void process()
         {
+            // process daddy
+            // call process baby
             var datelist = packlist.Select(x => x.date).Distinct();
             foreach (var date in datelist)
             {
@@ -39,7 +62,9 @@ namespace Lulu
 
         public void save()
         {
-            if(packlist.Count > 0 || 
+            // save daddy
+            // call save baby
+            if (packlist.Count > 0 || 
                 MessageBox.Show("Packlist is empty, do you still want to save?", "Alert",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {

@@ -16,7 +16,7 @@ namespace Lulu
     public partial class Form1 : Form
     {
         public List<Pack> packlist = new List<Pack>();
-        public Processor processor = null;
+        public Processor processor = Processor.GetInstance();
         public static PricePage pricepage = null;
         public static List<Price> pricelist = new List<Price>();
 
@@ -53,11 +53,11 @@ namespace Lulu
             changeFocusThroughKeyboard(e, QuanityTB, Keys.Enter);
         }
 
-        // if fill all corectly, return true, else
-        // ask component, person want to be null and quantity want to be 0, if yes return true
-        // no return false
         private bool soulfulThreeAsk()
         {
+            // if fill all corectly, return true, else
+            // ask component, person want to be null and quantity want to be 0, if yes return true
+            // no return false
             if (ComponentTB.Text == null || ComponentTB.Text == "")
             {
                 if (MessageBox.Show("Do you want the Component Name to be null?", "Alert",
@@ -177,9 +177,9 @@ namespace Lulu
             }
         }
 
-        // if ListView's row clicked, ask want to delete or not, yes then delete
         private void PackListView_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // if ListView's row clicked, ask want to delete or not, yes then delete
             try
             {
                 var selectedpack = (Pack)PackListView.SelectedItems[0].Tag;
@@ -213,9 +213,9 @@ namespace Lulu
             pricepage.Show();
         }
 
-        // delegate thing
         public static void callGetPriceList()
         {
+            // delegate thing
             pricelist = pricepage.getPriceList();
         }
 
@@ -223,7 +223,7 @@ namespace Lulu
         {
             if (!Directory.Exists(SaveLocationTB.Text))
             {
-                MessageBox.Show("The link you write is not exist.");
+                MessageBox.Show("The link you write is not exist or no permit.");
                 return;
             }
             else if (SaveLocationTB.Text.EndsWith("\\"))
@@ -240,19 +240,30 @@ namespace Lulu
                   MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
             {
                 return;
-                //} else if (Directory.Exists(SaveLocationTB.Text+ "\\PackData"))
-                //{
-                //    MessageBox.Show("PackData folder alr exist. Please delete or rename it.");
-                //    return;
             }
-            //Directory.CreateDirectory(SaveLocationTB.Text + "\\PackData");
-            processor = new Processor(packlist, pricelist, SaveLocationTB.Text + "\\PackData");
+            else if (Directory.Exists(SaveLocationTB.Text + "\\PackData"))
+            {
+                MessageBox.Show("PackData folder alr exist. Please delete or rename it.");
+                return;
+            }
+            Directory.CreateDirectory(SaveLocationTB.Text + "\\PackData");
+            processor.setValue(packlist, pricelist, SaveLocationTB.Text + "\\PackData");
             processor.process();
         }
 
         private void SaveBtn_Click(object sender, EventArgs e)
         {
-            processor = new Processor(packlist, pricelist, SaveLocationTB.Text + "\\PackData");
+            if (File.Exists(SaveLocationTB.Text + "savepack.csv")  || File.Exists(SaveLocationTB.Text + "saveprice.csv"))
+            {
+                MessageBox.Show("savepack or saveprice alr exist that link alr. Please delete, rename or change path it.");
+                return;
+            }
+            if (!Directory.Exists(SaveLocationTB.Text))
+            {
+                MessageBox.Show("The link you write is not exist or no permit.");
+                return;
+            }
+            processor.setValue(packlist, pricelist, SaveLocationTB.Text);
             processor.save();
         }
 
@@ -268,7 +279,7 @@ namespace Lulu
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string selectedFileName = openFileDialog.FileName;
-                processor = new Processor(packlist, pricelist, SaveLocationTB.Text + "\\PackData");
+                processor.setValue(packlist, pricelist, SaveLocationTB.Text);
                 var okformat = processor.checkLoadFormat(selectedFileName);
                 if(okformat == FILETYPE.PACK)
                 {
