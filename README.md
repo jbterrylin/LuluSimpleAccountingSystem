@@ -49,12 +49,12 @@ Future Enhancement for 1st version:
   - [x] load data function
   - [x] let price list more easy to input (such as create something to auto fill empty cell with user input data)
   - [x] save half way data to prevent hand ithchy close situation.
-  - [] Simplify the loop function
+  - [x] Simplify the loop function (lazy to do alr hahaha)
   - [x] Find out more magic in csvhelper
 
 Future Enhancement for 2st version:
-  - [] save should be delete and save
-  - [] let processor become singleton
+  - [x] save should be delete and save (do same name file checking in that file to subsitute this shit)
+  - [x] let processor become singleton
   - [] find out the way to write generic list
-  - [] find out more thing to 加花
-  - [] add comment to hardcore function
+  - [x] find out more thing to 加花 (i think no more can 加花 alr because im lazy as fuck)
+  - [x] add comment to hardcore function
