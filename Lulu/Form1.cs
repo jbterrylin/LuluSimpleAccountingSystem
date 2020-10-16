@@ -85,6 +85,13 @@ namespace Lulu
             return true;
         }
 
+        private void trimString()
+        {
+            // trim string before save
+            ComponentTB.Text = ComponentTB.Text.Trim();
+            PersonTB.Text = PersonTB.Text.Trim();
+        }
+
         private void QuanityTB_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -92,6 +99,7 @@ namespace Lulu
                 changeFocusThroughKeyboard(e, QuanityTB, Keys.Enter);
                 if (soulfulThreeAsk())
                 {
+                    trimString();
                     packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value });
                     QuanityTB.Value = 0;
                     updatePackListView();
@@ -119,6 +127,7 @@ namespace Lulu
         {
             if (soulfulThreeAsk())
             {
+                trimString();
                 packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value });
                 this.ActiveControl = DateTB;
                 ComponentTB.Text = "Part ";
