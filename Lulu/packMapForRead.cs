@@ -15,6 +15,8 @@ namespace Lulu
             Map(m => m.component).Name("component");
             Map(m => m.person).Name("person");
             Map(m => m.quantity).Name("quantity");
+            Map(m => m.listindex).Name("listindex");
+            Map(m => m.listname).Name("listname");
         }
     }
 }

@@ -19,6 +19,7 @@ namespace Lulu
         public Processor processor = Processor.GetInstance();
         public static PricePage pricepage = null;
         public static List<Price> pricelist = new List<Price>();
+        public decimal listindex = 0;
 
         public Form1()
         {
@@ -100,7 +101,7 @@ namespace Lulu
                 if (soulfulThreeAsk())
                 {
                     trimString();
-                    packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value });
+                    packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value, listindex = listindex, listname = ListNameTB.Text });
                     QuanityTB.Value = 0;
                     updatePackListView();
                     updatePackTreeView();
@@ -128,7 +129,7 @@ namespace Lulu
             if (soulfulThreeAsk())
             {
                 trimString();
-                packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value });
+                packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value, listindex = listindex, listname = ListNameTB.Text });
                 this.ActiveControl = DateTB;
                 ComponentTB.Text = "Part ";
                 PersonTB.Text = null;
@@ -141,10 +142,12 @@ namespace Lulu
         private void updatePackListView()
         {
             PackListView.Items.Clear();
-            foreach (var pack in packlist)
+            int no = 1;
+            foreach (var pack in packlist.Where(w => w.listindex == listindex).ToList())
             {
                 string[] row;
                 row = new string[] {
+                    no.ToString(),
                     pack.date.ToString("dd.MM.yyyy"),
                     pack.component.ToString(),
                     pack.person.ToString(),
@@ -155,6 +158,11 @@ namespace Lulu
                     Tag = pack
                 };
                 PackListView.Items.Add(lvi);
+                no++;
+            }
+            if(PackListView.Items.Count != 0)
+            {
+                PackListView.Items[PackListView.Items.Count - 1].EnsureVisible();
             }
         }
 
@@ -181,6 +189,7 @@ namespace Lulu
                         {
                             PackTreeView.Nodes[date.index].Nodes[component.index].Nodes[person.index].Nodes.Add(quantity.ToString());
                         }
+                        PackTreeView.Nodes[date.index].Nodes[component.index].Nodes[person.index].Nodes.Add("N of unit: " + quantitylist.Count().ToString());
                     }
                 }
             }
@@ -312,6 +321,48 @@ namespace Lulu
             }
             updatePackListView();
             updatePackTreeView();
+        }
+
+        private void listNameUpdate()
+        {
+            if(packlist.Where(w => w.listindex == listindex).ToList().Count != 0)
+            {
+                ListNameTB.Text = packlist.Where(w => w.listindex == listindex).ToList()[0].listname;
+            } else
+            {
+                ListNameTB.Text = null;
+            }
+            ListLbl.Text = listindex.ToString();
+            ListViewPageNumTB.Value = listindex;
+        }
+
+        private void LastListView_Click(object sender, EventArgs e)
+        {
+            if(listindex != 0)
+            {
+                listindex--;
+                updatePackListView();
+                listNameUpdate();
+            }
+        }
+
+        private void ListViewPageNumTB_ValueChanged(object sender, EventArgs e)
+        {
+            listindex = ListViewPageNumTB.Value;
+            updatePackListView();
+            listNameUpdate();
+        }
+
+        private void NextListView_Click(object sender, EventArgs e)
+        {
+            listindex++;
+            updatePackListView();
+            listNameUpdate();
+        }
+
+        private void ListNameTB_TextChanged(object sender, EventArgs e)
+        {
+            packlist.Where(w => w.listindex == listindex).ToList().ForEach(s => s.listname = ListNameTB.Text);
         }
     }
 }

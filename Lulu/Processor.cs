@@ -83,7 +83,7 @@ namespace Lulu
         {
             Debug.WriteLine(selectedFileName);
             using (var reader = new StreamReader(selectedFileName))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            using (var csv = new CsvReader(reader, CultureInfo.CurrentCulture))
             {
                 csv.Read();
                 if (csv.GetField<string>(0) == "date" &&
@@ -106,21 +106,21 @@ namespace Lulu
         public List<Pack> loadPackList(string selectedFileName)
         {
             using (var reader = new StreamReader(selectedFileName))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            using (var csv = new CsvReader(reader, CultureInfo.CurrentCulture))
             {
                 csv.Configuration.Delimiter = ",";
                 csv.Read();
                 csv.ReadHeader();
                 csv.Configuration.RegisterClassMap<packMapForRead>();
-                var records = csv.GetRecords<Pack>();
-                return records.ToList();
+                var records = csv.GetRecords<Pack>().ToList();
+                return records;
             }
         }
 
         public List<Price> loadPriceList(string selectedFileName)
         {
             using (var reader = new StreamReader(selectedFileName))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            using (var csv = new CsvReader(reader, CultureInfo.CurrentCulture))
             {
                 csv.Read();
                 csv.ReadHeader();
@@ -133,7 +133,7 @@ namespace Lulu
         //public List<Price> load(string selectedFileName, FILETYPE filetype, bool overwrite)
         //{
         //    using (var reader = new StreamReader(selectedFileName))
-        //    using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        //    using (var csv = new CsvReader(reader, CultureInfo.CurrentCulture))
         //    {
         //        csv.Read();
         //        if (filetype == FILETYPE.PRICE)
@@ -164,6 +164,8 @@ namespace Lulu
                 csvWriter.WriteField("component");
                 csvWriter.WriteField("person");
                 csvWriter.WriteField("quantity");
+                csvWriter.WriteField("listindex");
+                csvWriter.WriteField("listname");
                 csvWriter.NextRecord();
 
                 foreach (var pack in packlist)
@@ -172,6 +174,8 @@ namespace Lulu
                     csvWriter.WriteField(pack.component);
                     csvWriter.WriteField(pack.person);
                     csvWriter.WriteField(pack.quantity);
+                    csvWriter.WriteField(pack.listindex);
+                    csvWriter.WriteField(pack.listname);
                     csvWriter.NextRecord();
                 }
 
@@ -422,16 +426,32 @@ namespace Lulu
                     else
                     {
                         //tempcomponentlist
-                        var personindicomponentlist = packlist.FindAll(pack => pack.person == person.ToString()).Select(x => x.component);
+                        var personindicomponentlist = packlist.FindAll(pack => pack.person == person.ToString()).Select(x => x.component).Distinct();
                         foreach (var component in personindicomponentlist)
                         {
                             decimal quantity = packlist.FindAll(pack => pack.person == person.ToString() && pack.component == component.ToString()).Select(x => x.quantity).Sum();
                             decimal price = pricelist.Find(pack => pack.person == person.ToString() && pack.component == component.ToString()).price;
-                            totalprice += quantity * price;
+
+                            if (person == "Qin")
+                            {
+                                Console.WriteLine("----------------");
+                                Console.WriteLine(component);
+                                Console.WriteLine("Ori: " + totalprice);
+                                Console.WriteLine(quantity);
+                                Console.WriteLine(price);
+
+                            }
+                            totalprice += (quantity * price);
+                            if (person == "Qin")
+                            {
+                                Console.WriteLine("after: " + totalprice);
+                                Console.WriteLine("----------------");
+                            }
                         }
                         csvWriter.WriteField(totalprice);
                         csvWriter.WriteField("");
                         //csvWriter.WriteField(filteredcomponentlist.FindAll(pack => pack.person == person.ToString()).Select(x => x.quantity).Sum());
+                   
                     }
                 }
 

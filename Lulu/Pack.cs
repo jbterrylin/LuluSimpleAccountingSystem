@@ -17,5 +17,10 @@ namespace Lulu
         public string person { get; set; }
         [Name("quantity")]
         public decimal quantity { get; set; }
+
+        [Name("listindex")]
+        public decimal listindex { get; set; }
+        [Name("listname")]
+        public string listname { get; set; }
     }
 }
