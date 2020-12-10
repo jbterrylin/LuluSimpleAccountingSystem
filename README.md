@@ -58,3 +58,9 @@ Future Enhancement for 2st version:
   - [] find out the way to write generic list
   - [x] find out more thing to 加花 (i think no more can 加花 alr because im lazy as fuck)
   - [x] add comment to hardcore function
+  
+Enchancement base on user require:
+  - [x] add no beside input table
+	- [x] add n of pack in list tree
+	- [x] input table show most bottom(newest data)
+	- [x] add pagination for input table
