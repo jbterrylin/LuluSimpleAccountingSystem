@@ -27,6 +27,9 @@ What it do:
       - same as person based data, but
         - there is a price list(column=person, row=component) above person based data
         - there is a row under row of component that contain the total price count from (quantity * price)
+    - Component Week Data
+      - 2d data(date and component)
+      - It will show each total components in that date
         
 Interesting place:
   - fast hand focus
