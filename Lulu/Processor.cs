@@ -57,6 +57,7 @@ namespace Lulu
             processPackComponentBased();
             processPackPeopleBased();
             processPackPaidBased();
+            processComponentWeekBased();
             MessageBox.Show("process success");
         }
 
@@ -273,6 +274,46 @@ namespace Lulu
             }
         }
 
+        private void processComponentWeekBased()
+        {
+            using (var mem = new MemoryStream())
+            using (var writer = new StreamWriter(mem))
+            using (var csvWriter = new CsvWriter(writer, System.Globalization.CultureInfo.CurrentCulture))
+            {
+                csvWriter.Configuration.Delimiter = ",";
+
+                var componentlist = packlist.Select(pack => pack.component).Distinct();
+                var datelist = packlist.Select(pack => pack.date).Distinct();
+
+                csvWriter.WriteField("Date");
+                foreach (var component in componentlist)
+                {
+                    csvWriter.WriteField(component);
+                }
+                csvWriter.NextRecord();
+
+                foreach (var datetime in datelist)
+                {
+                    csvWriter.WriteField(datetime.ToString());
+                    foreach (var component in componentlist)
+                    {
+                        var totalcomponentinweek = packlist.Where(pack => pack.component == component && pack.date == datetime).Select(pack => pack.quantity).Sum();
+                        csvWriter.WriteField(totalcomponentinweek.ToString());
+                    }
+                    csvWriter.NextRecord();
+                }
+
+                writer.Flush();
+                var result = Encoding.UTF8.GetString(mem.ToArray());
+                //Console.WriteLine(result);
+                // Write the string to a file.
+                StreamWriter file = new StreamWriter(savelink + "\\totalquantity.csv");
+                file.WriteLine(result);
+                file.Close();
+                mem.Flush();
+            }
+        }
+
         private void processPackComponentBased()
         {
             var componentlist = packlist.Select(x => x.component).Distinct();
@@ -431,22 +472,7 @@ namespace Lulu
                         {
                             decimal quantity = packlist.FindAll(pack => pack.person == person.ToString() && pack.component == component.ToString()).Select(x => x.quantity).Sum();
                             decimal price = pricelist.Find(pack => pack.person == person.ToString() && pack.component == component.ToString()).price;
-
-                            if (person == "Qin")
-                            {
-                                Console.WriteLine("----------------");
-                                Console.WriteLine(component);
-                                Console.WriteLine("Ori: " + totalprice);
-                                Console.WriteLine(quantity);
-                                Console.WriteLine(price);
-
-                            }
                             totalprice += (quantity * price);
-                            if (person == "Qin")
-                            {
-                                Console.WriteLine("after: " + totalprice);
-                                Console.WriteLine("----------------");
-                            }
                         }
                         csvWriter.WriteField(totalprice);
                         csvWriter.WriteField("");
