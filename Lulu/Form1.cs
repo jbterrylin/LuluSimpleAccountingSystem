@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Collections;
 using System.IO;
+using System.Globalization;
 
 namespace Lulu
 {
@@ -18,6 +19,7 @@ namespace Lulu
         public List<Pack> packlist = new List<Pack>();
         public Processor processor = Processor.GetInstance();
         public static PricePage pricepage = null;
+        //public static DatePage datepage = null;
         public static List<Price> pricelist = new List<Price>();
         public decimal listindex = 0;
 
@@ -26,7 +28,63 @@ namespace Lulu
             InitializeComponent();
             DateTB.CustomFormat = "dd.MM.yyyy";
             this.ActiveControl = DateTB;
+
+
+            var a = GetWeekOfMonth(new DateTime(2020, 12, 19));
+            //Debug.WriteLine("--------------");
+            //Debug.WriteLine(a.ToString());
+            //Debug.WriteLine("--------------");
         }
+
+        public int dateToOne(DateTime date)
+        {
+            var temp = date.DayOfWeek;
+            if(temp == DayOfWeek.Monday)
+            {
+                return 1;
+            } else if (temp == DayOfWeek.Tuesday)
+            {
+                return 2;
+            }
+            else if (temp == DayOfWeek.Wednesday)
+            {
+                return 3;
+            }
+            else if (temp == DayOfWeek.Thursday)
+            {
+                return 4;
+            }
+            else if (temp == DayOfWeek.Friday)
+            {
+                return 5;
+            }
+            else if (temp == DayOfWeek.Saturday)
+            {
+                return 6;
+            } else
+            {
+                return 7;
+            }
+        }
+
+        public int GetWeekOfMonth(DateTime date)
+        {
+            var temp = date;
+            while(dateToOne(temp) != 7)
+            {
+
+            }
+            var daynumber = dateToOne(date);
+
+
+            DateTime beginningOfMonth = new DateTime(date.Year, date.Month, 1);
+
+            while (date.Date.AddDays(1).DayOfWeek != CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek)
+                date = date.AddDays(1);
+
+            return (int)Math.Truncate((double)date.Subtract(beginningOfMonth).TotalDays / 7f) + 1;
+        }
+
 
         private void changeFocusThroughKeyboard(KeyEventArgs e, Control targetTB, Keys key)
         {
@@ -75,7 +133,7 @@ namespace Lulu
                     return false;
                 }
             }
-            if (QuanityTB.Value == 0)
+            if (decimal.Parse(QuanityTB.Text) == 0)
             {
                 if (MessageBox.Show("Do you want the quantity is 0?", "Alert",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
@@ -91,6 +149,7 @@ namespace Lulu
             // trim string before save
             ComponentTB.Text = ComponentTB.Text.Trim();
             PersonTB.Text = PersonTB.Text.Trim();
+            QuanityTB.Text = QuanityTB.Text.Trim();
         }
 
         private void QuanityTB_KeyDown(object sender, KeyEventArgs e)
@@ -98,11 +157,17 @@ namespace Lulu
             if (e.KeyCode == Keys.Enter)
             {
                 changeFocusThroughKeyboard(e, QuanityTB, Keys.Enter);
+
+                decimal result;
+                if (!decimal.TryParse(QuanityTB.Text.Trim(), out result))
+                {
+                    MessageBox.Show("Your input in Quanity TB is not decimal.");
+                    return;
+                }
                 if (soulfulThreeAsk())
                 {
                     trimString();
-                    packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value, listindex = listindex, listname = ListNameTB.Text });
-                    QuanityTB.Value = 0;
+                    packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = decimal.Parse(QuanityTB.Text), listindex = listindex, listname = ListNameTB.Text });
                     updatePackListView();
                     updatePackTreeView();
                     return;
@@ -129,11 +194,11 @@ namespace Lulu
             if (soulfulThreeAsk())
             {
                 trimString();
-                packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = QuanityTB.Value, listindex = listindex, listname = ListNameTB.Text });
+                packlist.Add(new Pack() { date = DateTB.Value.Date, component = ComponentTB.Text, person = PersonTB.Text, quantity = decimal.Parse(QuanityTB.Text), listindex = listindex, listname = ListNameTB.Text });
                 this.ActiveControl = DateTB;
                 ComponentTB.Text = "Part ";
                 PersonTB.Text = null;
-                QuanityTB.Value = 0;
+                QuanityTB.Text = null;
                 updatePackListView();
                 updatePackTreeView();
             }
@@ -363,6 +428,12 @@ namespace Lulu
         private void ListNameTB_TextChanged(object sender, EventArgs e)
         {
             packlist.Where(w => w.listindex == listindex).ToList().ForEach(s => s.listname = ListNameTB.Text);
+        }
+
+        private void DateBtn_Click(object sender, EventArgs e)
+        {
+            //datepage = new DatePage();
+            //datepage.Show();
         }
     }
 }

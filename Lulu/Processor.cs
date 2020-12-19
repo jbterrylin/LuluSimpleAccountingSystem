@@ -274,6 +274,17 @@ namespace Lulu
             }
         }
 
+        public int GetWeekOfMonth(DateTime date)
+        {
+            var a = date.DayOfWeek.ToString();
+            DateTime beginningOfMonth = new DateTime(date.Year, date.Month, 1);
+
+            while (date.Date.AddDays(1).DayOfWeek != CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek)
+                date = date.AddDays(1);
+
+            return (int)Math.Truncate((double)date.Subtract(beginningOfMonth).TotalDays / 7f) + 1;
+        }
+
         private void processComponentWeekBased()
         {
             using (var mem = new MemoryStream())
@@ -283,7 +294,10 @@ namespace Lulu
                 csvWriter.Configuration.Delimiter = ",";
 
                 var componentlist = packlist.Select(pack => pack.component).Distinct();
-                var datelist = packlist.Select(pack => pack.date).Distinct();
+                var maxdate = packlist.Where(pack => pack.date != null)
+                                  .Max(pack => pack.date);
+                var maxnofweek = GetWeekOfMonth(maxdate);
+
 
                 csvWriter.WriteField("Date");
                 foreach (var component in componentlist)
@@ -292,16 +306,26 @@ namespace Lulu
                 }
                 csvWriter.NextRecord();
 
-                foreach (var datetime in datelist)
+                packlist.Select(pack => pack.date).Distinct();
+
+                for (int i=0; i<maxnofweek; i++)
                 {
-                    csvWriter.WriteField(datetime.ToString());
-                    foreach (var component in componentlist)
-                    {
-                        var totalcomponentinweek = packlist.Where(pack => pack.component == component && pack.date == datetime).Select(pack => pack.quantity).Sum();
-                        csvWriter.WriteField(totalcomponentinweek.ToString());
-                    }
-                    csvWriter.NextRecord();
+
                 }
+                //var datelist = packlist.Select(pack => pack.date).Distinct();
+
+                //csvWriter.NextRecord();
+
+                //foreach (var datetime in datelist)
+                //{
+                //    csvWriter.WriteField(datetime.ToString());
+                //    foreach (var component in componentlist)
+                //    {
+                //        var totalcomponentinweek = packlist.Where(pack => pack.component == component && pack.date == datetime).Select(pack => pack.quantity).Sum();
+                //        csvWriter.WriteField(totalcomponentinweek.ToString());
+                //    }
+                //    csvWriter.NextRecord();
+                //}
 
                 writer.Flush();
                 var result = Encoding.UTF8.GetString(mem.ToArray());
